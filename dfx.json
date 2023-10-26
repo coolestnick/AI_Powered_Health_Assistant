@@ -1,0 +1,13 @@
+{
+    "canisters": {
+        "AI_Powered_Health_Assistant": {
+            "type": "custom",
+            "build": "npx azle AI_Powered_Health_Assistant",
+            "root": "src",
+            "ts": "src/index.ts",
+            "candid": "src/index.did",
+            "wasm": ".azle/AI_Powered_Health_Assistant/AI_Powered_Health_Assistant.wasm.gz"
+        }
+    }
+}
+

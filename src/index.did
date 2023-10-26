@@ -1,0 +1,41 @@
+type HealthRecord = record {
+  id : text;
+  userId : text;
+  createdAt : nat64;
+  updatedAt : opt nat64;
+  medications : vec text;
+  conditions : vec text;
+  allergies : vec text;
+};
+type HealthRecordPayload = record {
+  userId : text;
+  medications : vec text;
+  conditions : vec text;
+  allergies : vec text;
+};
+type User = record {
+  id : text;
+  age : float64;
+  name : text;
+  createdAt : nat64;
+  updatedAt : opt nat64;
+  location : text;
+};
+type UserPayload = record { age : float64; name : text; location : text };
+type _AzleResult = variant { Ok : HealthRecord; Err : text };
+type _AzleResult_1 = variant { Ok : User; Err : text };
+type _AzleResult_2 = variant { Ok : vec User; Err : text };
+type _AzleResult_3 = variant { Ok : vec HealthRecord; Err : text };
+service : () -> {
+  createHealthRecord : (HealthRecordPayload) -> (_AzleResult);
+  createUser : (UserPayload) -> (_AzleResult_1);
+  deleteHealthRecord : (text) -> (_AzleResult);
+  deleteUser : (text) -> (_AzleResult_1);
+  getAllUsers : () -> (_AzleResult_2) query;
+  getHealthRecord : (text) -> (_AzleResult) query;
+  getHealthRecordsForUser : (text) -> (_AzleResult_3) query;
+  getUser : (text) -> (_AzleResult_1) query;
+  updateHealthRecord : (text, HealthRecordPayload) -> (_AzleResult);
+  updateUser : (text, UserPayload) -> (_AzleResult_1);
+}
+

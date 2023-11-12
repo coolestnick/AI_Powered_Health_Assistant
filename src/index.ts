@@ -13,6 +13,10 @@ import {
 } from "azle";
 import { v4 as uuidv4 } from "uuid";
 
+
+
+
+
 type User = Record<{
   id: string;
   name: string;
@@ -20,7 +24,7 @@ type User = Record<{
   location: string;
   createdAt: nat64;
   updatedAt: Opt<nat64>;
-};
+}>;
 
 type HealthRecord = Record<{
   id: string;
@@ -30,22 +34,26 @@ type HealthRecord = Record<{
   medications: Vec<string>;
   createdAt: nat64;
   updatedAt: Opt<nat64>;
-};
+}>;
 
-type UserPayload = Record<{
+    
+   type UserPayload = Record<{
   name: string;
   age: number;
   location: string;
-};
+}>;
 
-type HealthRecordPayload = Record<{
+    type HealthRecordPayload = Record<{
   userId: string;
   allergies: Vec<string>;
   conditions: Vec<string>;
   medications: Vec<string>;
-};
+}>;
+
 
 const userStorage = new StableBTreeMap<string, User>(0, 44, 1024);
+
+
 const healthRecordStorage = new StableBTreeMap<string, HealthRecord>(1, 44, 1024);
 
 $update;
@@ -61,6 +69,7 @@ export function createUser(payload: UserPayload): Result<User, string> {
   return Result.Ok<User, string>(user);
 }
 
+
 $query;
 export function getUser(id: string): Result<User, string> {
   return match(userStorage.get(id), {
@@ -69,7 +78,7 @@ export function getUser(id: string): Result<User, string> {
   });
 }
 
-$query;
+ $query;
 export function getAllUsers(): Result<Vec<User>, string> {
   return Result.Ok(userStorage.values());
 }
@@ -91,7 +100,7 @@ export function updateUser(id: string, payload: UserPayload): Result<User, strin
   });
 }
 
-$update;
+ $update;
 export function deleteUser(id: string): Result<User, string> {
   return match(userStorage.get(id), {
     Some: (existingUser) => {
@@ -102,7 +111,7 @@ export function deleteUser(id: string): Result<User, string> {
   });
 }
 
-$update;
+   $update;
 export function createHealthRecord(payload: HealthRecordPayload): Result<HealthRecord, string> {
   const healthRecord: HealthRecord = {
     id: uuidv4(),
@@ -115,7 +124,7 @@ export function createHealthRecord(payload: HealthRecordPayload): Result<HealthR
   return Result.Ok<HealthRecord, string>(healthRecord);
 }
 
-$query;
+ $query;
 export function getHealthRecord(id: string): Result<HealthRecord, string> {
   return match(healthRecordStorage.get(id), {
     Some: (healthRecord) => Result.Ok<HealthRecord, string>(healthRecord),
@@ -157,6 +166,7 @@ export function deleteHealthRecord(id: string): Result<HealthRecord, string> {
   });
 }
 
+
 globalThis.crypto = {
   //@ts-ignore
   getRandomValues: () => {
@@ -170,88 +180,3 @@ globalThis.crypto = {
   },
 };
 
-$update;
-export function createNewUser(payload: UserPayload): Result<User, string> {
-  const user: User = {
-    id: uuidv4(),
-    createdAt: ic.time(),
-    updatedAt: Opt.None,
-    ...payload,
-  };
-
-  userStorage.insert(user.id, user);
-  return Result.Ok<User, string>(user);
-}
-
-$query;
-export function getNewUser(id: string): Result<User, string> {
-  return match(userStorage.get(id), {
-    Some: (user) => Result.Ok<User, string>(user),
-    None: () => Result.Err<User, string>(`User with ID=${id} not found.`),
-  });
-}
-
-$query;
-export function getAllNewUsers(): Result<Vec<User>, string> {
-  return Result.Ok(userStorage.values());
-}
-
-$update;
-export function updateNewUser(id: string, payload: UserPayload): Result<User, string> {
-  return match(userStorage.get(id), {
-    Some: (existingUser) => {
-      const updatedUser: User = {
-        ...existingUser,
-        ...payload,
-        updatedAt: Opt.Some(ic.time()),
-      };
-
-      userStorage.insert(updatedUser.id, updatedUser);
-      return Result.Ok<User, string>(updatedUser);
-    },
-    None: () => Result.Err<User, string>(`User with ID=${id} not found.`),
-  });
-}
-
-$update;
-export function createNewHealthRecord(payload: HealthRecordPayload): Result<HealthRecord, string> {
-  const healthRecord: HealthRecord = {
-    id: uuidv4(),
-    createdAt: ic.time(),
-    updatedAt: Opt.None,
-    ...payload,
-  };
-
-  healthRecordStorage.insert(healthRecord.id, healthRecord);
-  return Result.Ok<HealthRecord, string>(healthRecord);
-}
-
-$query;
-export function getNewHealthRecord(id: string): Result<HealthRecord, string> {
-  return match(healthRecordStorage.get(id), {
-    Some: (healthRecord) => Result.Ok<HealthRecord, string>(healthRecord),
-    None: () => Result.Err<HealthRecord, string>(`HealthRecord with ID=${id} not found.`),
-  });
-}
-
-$query;
-export function getAllNewHealthRecords(): Result<Vec<HealthRecord>, string> {
-  return Result.Ok(healthRecordStorage.values());
-}
-
-$update;
-export function updateNewHealthRecord(id: string, payload: HealthRecordPayload): Result<HealthRecord, string> {
-  return match(healthRecordStorage.get(id), {
-    Some: (existingRecord) => {
-      const updatedRecord: HealthRecord = {
-        ...existingRecord,
-        ...payload,
-        updatedAt: Opt.Some(ic.time()),
-      };
-
-      healthRecordStorage.insert(updatedRecord.id, updatedRecord);
-      return Result.Ok<HealthRecord, string>(updatedRecord);
-    },
-    None: () => Result.Err<HealthRecord, string>(`HealthRecord with ID=${id} not found.`),
-  });
-}
